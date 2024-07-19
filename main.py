@@ -1,4 +1,5 @@
 import pandas as pd 
+import matplotlib.pyplot as plt
 dollar_df = pd.read_csv("dollar.csv")
 vix_df = pd.read_csv("vix.csv")
 
@@ -23,10 +24,20 @@ def add_change(df):
     return change_list
 
 vix_df["Change"]=add_change(vix_df)
-print(vix_df)
-
 dollar_df["Change"]=add_change(dollar_df)
+
+print(vix_df)
 print(dollar_df)
+
+# Plotting the VIX and Dollar data. X-axis : Dates, Y-axis: Close price
+vix_df.plot(x="Date",y="Close",title="Close VIX data")
+dollar_df.plot(x="Date",y="Close",title="Close Dollar data")
+
+# Plotting the VIX and Dollar data. X-axis : Dates, Y-axis: Change price
+vix_df.plot(x="Date",y="Change",title="Change VIX data")
+dollar_df.plot(x="Date",y="Change",title="Change Dollar data")
+
+plt.show()
 
 
 
