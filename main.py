@@ -30,13 +30,19 @@ vix_df["Change"]=add_change(vix_df)
 dollar_df["Change"]=add_change(dollar_df)
 
 # Fitting the Dollar in the range of the vix
-def print_start_and_end(df):
-    print(df.loc[df["Date"]=="1990-01-02"])   
-    print(df.loc[df["Date"]=="2024-06-21"])      
+start=int()
+end=int()
+index=dollar_df.loc[dollar_df["Date"]=="1990-01-02"]
+for index,row in index.iterrows():
+    start=index
+index=dollar_df.loc[dollar_df["Date"]=="2024-06-21"]
+for index,row in index.iterrows():
+    end=index
+
 # Start : 4792
 # End : 13581
 
-dollar_df=dollar_df[4792:13582]
+dollar_df=dollar_df[start:(end+1)]
 dollar_df=dollar_df.reset_index(drop=True)
 
 print(vix_df)
