@@ -15,33 +15,37 @@ print(main_df)
 x=main_df["Vix Close"]
 y=main_df["Dollar Close"]
 
-#print(x)
-#print(y)
-
-x_train, x_test, y_train, y_test = sk.train_test_split(x,y,train_size=0.8)
-
-#plt.scatter(x_train,y_train)
-#plt.scatter(x_test,y_test)
+# Creating training and testing Data 
+x_train, x_test, y_train, y_test = sk.train_test_split(x,y,train_size=0.8,random_state=15)
 
 x_train=np.array(x_train).reshape(-1,1)
 x_test=np.array(x_test).reshape(-1,1)
 
-#print(x_train)
-#print(x_test)
-
+# Linear Regression 
 lr = lm.LinearRegression()
 lr.fit(x_train,y_train)
 
-print(lr.intercept_)
-print(lr.coef_)
-
 prediction= lr.predict(x_test)
 
-print(lr.score(x_test,y_test))
+print("Linear Regression Score "+str(lr.score(x_test,y_test)))
 
+# Huber Regression 
+hr = lm.HuberRegressor(epsilon=1.0)
+hr.fit(x_train,y_train)
+
+prediction2= hr.predict(x_test)
+
+print(" Huber Regression Score "+str(hr.score(x_test,y_test)))
+
+
+# Plotting Models
 plt.plot(x_test,prediction,color="red",label="Model")
 plt.scatter(x_test,y_test,label="Test Data")
+plt.show()
 
+plt.plot(x_test,prediction2,color="red")
+plt.scatter(x_test,y_test)
+plt.show()
 
 
 
@@ -63,4 +67,3 @@ plt.scatter(x_test,y_test,label="Test Data")
 #main_df.plot(x="Vix Close",y="Dollar Close",title="Dollar vs Vix",kind="scatter")
 
 
-plt.show()
