@@ -5,8 +5,7 @@ start_time=time.time()
 dollar_df = pd.read_csv("dollar.csv")
 vix_df = pd.read_csv("vix.csv")
 
-print(vix_df)
-print(dollar_df)
+
 # Dropping the Volume Data Column, NAN values, and duplicate values 
 def clean_data(df):
     df= df.drop(columns=["Volume","Adj Close"])
@@ -20,6 +19,8 @@ dollar_df=clean_data(dollar_df)
 vix_df=vix_df.reset_index(drop=True)
 dollar_df=dollar_df.reset_index(drop=True)
 
+print(vix_df)
+print(dollar_df)
 
 
 date_list=list()
@@ -31,7 +32,7 @@ dollar_close_list=list()
 
 
 
-# Fitting the Dollar in the range of the vix
+# Getting the Dollar and VIX on the same date 
 for index, row in dollar_df.iterrows():
   if (vix_df["Date"]==row["Date"]).any():
     date_list.append(row["Date"])
@@ -42,7 +43,7 @@ for index, row in dollar_df.iterrows():
   
   else: 
     continue 
-#print(date_list)
+
 vix_open_list=list()
 vix_high_list=list()
 vix_low_list=list()
@@ -56,6 +57,7 @@ for index,row in vix_df.iterrows():
         vix_low_list.append(row["Low"])
         vix_close_list.append(row["Close"])
 
+# combining datasets 
 combined_df= pd.DataFrame({"Date":date_list,"Vix Open":vix_open_list,"Vix High": vix_high_list,
 "Vix Low":vix_low_list,"Vix Close":vix_close_list, "Dollar Open":dollar_open_list,
 "Dolar High": dollar_high_list,"Dollar Low":dollar_low_list, "Dollar Close":dollar_close_list,
@@ -76,7 +78,10 @@ def add_change(df,label):
 combined_df["Vix Change"]=add_change(combined_df,"Vix Close")
 combined_df["Dollar Change"]=add_change(combined_df, "Dollar Close")
 
+# exporting to csv file 
 combined_df.to_csv("combined.csv")
+
+# measuring program runtime 
 end_time=time.time()
 print(end_time-start_time)
 
