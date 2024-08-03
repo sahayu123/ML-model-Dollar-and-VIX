@@ -24,19 +24,26 @@ x_test=np.array(x_test).reshape(-1,1)
 # Linear Regression 
 lr = lm.LinearRegression()
 lr.fit(x_train,y_train)
-
 prediction= lr.predict(x_test)
-
 print("Linear Regression Score "+str(lr.score(x_test,y_test)))
 
 # Huber Regression 
 hr = lm.HuberRegressor(epsilon=1.0)
 hr.fit(x_train,y_train)
-
 prediction2= hr.predict(x_test)
-
 print(" Huber Regression Score "+str(hr.score(x_test,y_test)))
 
+# Quantile Regression 
+qr = lm.QuantileRegressor(quantile=0.5)
+qr.fit(x_train,y_train)
+prediction3= qr.predict(x_test)
+print(" Quantile Regression Score "+str(qr.score(x_test,y_test)))
+
+# RANCAS Regression 
+rr = lm.RANSACRegressor(random_state=6)
+rr.fit(x_train,y_train)
+prediction4= rr.predict(x_test)
+print(" RANSAC Regression Score "+str(rr.score(x_test,y_test)))
 
 # Plotting Models
 plt.plot(x_test,prediction,color="red",label="Model")
@@ -44,6 +51,14 @@ plt.scatter(x_test,y_test,label="Test Data")
 plt.show()
 
 plt.plot(x_test,prediction2,color="red")
+plt.scatter(x_test,y_test)
+plt.show()
+
+plt.plot(x_test,prediction3,color="red")
+plt.scatter(x_test,y_test)
+plt.show()
+
+plt.plot(x_test,prediction4,color="red")
 plt.scatter(x_test,y_test)
 plt.show()
 
