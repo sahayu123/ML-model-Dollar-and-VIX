@@ -3,14 +3,13 @@ import matplotlib.pyplot as plt
 import numpy as np 
 import sklearn.model_selection as sk 
 import sklearn.linear_model as lm
+import math 
 
 # Original Dataset : 
 # Dollar : 16600 rows X 7 columns 
 # VIX : 8994 rows X 7 columns 
 
 main_df=pd.read_csv("combined.csv")
-
-print(main_df)
 
 x=main_df["Vix Close"]
 y=main_df["Dollar Close"]
@@ -21,6 +20,7 @@ x_train, x_test, y_train, y_test = sk.train_test_split(x,y,train_size=0.8,random
 x_train=np.array(x_train).reshape(-1,1)
 x_test=np.array(x_test).reshape(-1,1)
 
+# Regression Models 
 # Linear Regression 
 lr = lm.LinearRegression()
 lr.fit(x_train,y_train)
@@ -45,6 +45,32 @@ rr.fit(x_train,y_train)
 prediction4= rr.predict(x_test)
 print(" RANSAC Regression Score "+str(rr.score(x_test,y_test)))
 
+# Logarithmic Regression 
+logs_vix=list()
+logs_dollar=list()
+for index, row in main_df.iterrows():
+    logs_vix.append(math.log(main_df["Vix Close"][index]))
+    logs_dollar.append(math.log(main_df["Dollar Close"][index]))
+
+log_x=pd.DataFrame({"Vix Close":logs_vix})
+log_y=pd.DataFrame({"Dollar Close":logs_dollar})
+
+log_x_train, log_x_test, log_y_train, log_y_test = sk.train_test_split(log_x,log_y,train_size=0.8,random_state=15)
+
+log_x_train=np.array(log_x_train).reshape(-1,1)
+log_x_test=np.array(log_x_test).reshape(-1,1)
+
+logr = lm.LinearRegression()
+logr.fit(log_x_train,log_y_train)
+prediction5= logr.predict(log_x_test)
+print("Logarithmic Regression Score "+str(logr.score(log_x_test,log_y_test)))
+
+
+# Time Series 
+
+
+
+
 # Plotting Models
 plt.plot(x_test,prediction,color="red",label="Model")
 plt.scatter(x_test,y_test,label="Test Data")
@@ -60,6 +86,10 @@ plt.show()
 
 plt.plot(x_test,prediction4,color="red")
 plt.scatter(x_test,y_test)
+plt.show()
+
+plt.plot(log_x_test,prediction5,color="red")
+plt.scatter(log_x_test,log_y_test)
 plt.show()
 
 
