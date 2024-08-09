@@ -65,11 +65,37 @@ logr.fit(log_x_train,log_y_train)
 prediction5= logr.predict(log_x_test)
 print("Logarithmic Regression Score "+str(logr.score(log_x_test,log_y_test)))
 
+# Linear Regression on First 30 VIX values 
+under_30_vix=list()
+under_30_dollar=list()
 
-# Time Series 
+for index, row in main_df.iterrows():
+    if main_df["Vix Close"][index]<31:
+        under_30_vix.append(main_df["Vix Close"][index])
+        under_30_dollar.append(main_df["Dollar Close"][index])
+
+x_30=pd.DataFrame({"Vix":under_30_vix})
+y_30=pd.DataFrame({"Dollar":under_30_dollar})
+
+x_train30, x_test30, y_train30, y_test30 = sk.train_test_split(x_30,y_30,train_size=0.8,random_state=15)
+
+x_train30=np.array(x_train30).reshape(-1,1)
+x_test30=np.array(x_test30).reshape(-1,1)
+
+lr30 = lm.LinearRegression()
+lr30.fit(x_train30,y_train30)
+prediction30= lr.predict(x_test30)
+print("First 30 Linear Regression Score "+str(lr.score(x_test30,y_test30)))
 
 
 
+
+
+# Time Series Model 
+
+# Polynomial Regression 
+
+#Multiple x values 
 
 # Plotting Models
 plt.plot(x_test,prediction,color="red",label="Model")
@@ -90,6 +116,10 @@ plt.show()
 
 plt.plot(log_x_test,prediction5,color="red")
 plt.scatter(log_x_test,log_y_test)
+plt.show()
+
+plt.plot(x_test30,prediction30,color="red",label="Model")
+plt.scatter(x_test30,y_test30,label="Test Data")
 plt.show()
 
 
