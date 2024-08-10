@@ -4,6 +4,7 @@ import numpy as np
 import sklearn.model_selection as sk 
 import sklearn.linear_model as lm
 import math 
+from sklearn.metrics import r2_score
 
 # Original Dataset : 
 # Dollar : 16600 rows X 7 columns 
@@ -11,8 +12,11 @@ import math
 
 main_df=pd.read_csv("combined.csv")
 
+
 x=main_df["Vix Close"]
 y=main_df["Dollar Close"]
+
+
 
 # Creating training and testing Data 
 x_train, x_test, y_train, y_test = sk.train_test_split(x,y,train_size=0.8,random_state=15)
@@ -70,7 +74,7 @@ under_30_vix=list()
 under_30_dollar=list()
 
 for index, row in main_df.iterrows():
-    if main_df["Vix Close"][index]<31:
+    if (main_df["Vix Close"][index]<31):
         under_30_vix.append(main_df["Vix Close"][index])
         under_30_dollar.append(main_df["Dollar Close"][index])
 
@@ -84,14 +88,37 @@ x_test30=np.array(x_test30).reshape(-1,1)
 
 lr30 = lm.LinearRegression()
 lr30.fit(x_train30,y_train30)
-prediction30= lr.predict(x_test30)
+prediction6= lr.predict(x_test30)
 print("First 30 Linear Regression Score "+str(lr.score(x_test30,y_test30)))
 
+# Multiple Variables Linear Regression 
+yesterday_list=list()
+day_before_list=list()
+for index, row in main_df.iterrows():
+        try:
+            yesterday_list.append(main_df["Vix Close"][index-1])
+        except: 
+            yesterday_list.append(0.0)
+        try: 
+            day_before_list.append(main_df["Vix Close"][index-2])
+        except:
+            day_before_list.append(0.0)
 
+yesterday_list=yesterday_list[2:]
+day_before_list= day_before_list[2:]
+x=x[2:]
+y=y[2:]
+print(len(x))
+print(len(day_before_list))
+print(len(yesterday_list))
+new_x=pd.DataFrame({"Vix Close":x, "Yesterday Close":yesterday_list,"Day Before Close":day_before_list})
+mul_x_train, mul_x_test, mul_y_train, mul_y_test = sk.train_test_split(new_x,y,train_size=0.8,random_state=15)
 
+lrm = lm.LinearRegression()
+lrm.fit(mul_x_train,mul_y_train)
+prediction7= lrm.predict(mul_x_test)
 
-
-# Time Series Model 
+print("Multiple Variables Linear Regression "+str(r2_score(mul_y_test,prediction7)))
 
 # Polynomial Regression 
 
@@ -118,8 +145,11 @@ plt.plot(log_x_test,prediction5,color="red")
 plt.scatter(log_x_test,log_y_test)
 plt.show()
 
-plt.plot(x_test30,prediction30,color="red",label="Model")
+plt.plot(x_test30,prediction6,color="red",label="Model")
 plt.scatter(x_test30,y_test30,label="Test Data")
+plt.show()
+
+plt.scatter(mul_y_test,prediction7)
 plt.show()
 
 
