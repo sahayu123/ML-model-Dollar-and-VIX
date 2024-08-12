@@ -4,7 +4,9 @@ import numpy as np
 import sklearn.model_selection as sk 
 import sklearn.linear_model as lm
 import math 
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score, classification_report, confusion_matrix
+from sklearn.tree import DecisionTreeClassifier
+
 
 # Original Dataset : 
 # Dollar : 16600 rows X 7 columns 
@@ -106,13 +108,10 @@ for index, row in main_df.iterrows():
 
 yesterday_list=yesterday_list[2:]
 day_before_list= day_before_list[2:]
-x=x[2:]
-y=y[2:]
-print(len(x))
-print(len(day_before_list))
-print(len(yesterday_list))
-new_x=pd.DataFrame({"Vix Close":x, "Yesterday Close":yesterday_list,"Day Before Close":day_before_list})
-mul_x_train, mul_x_test, mul_y_train, mul_y_test = sk.train_test_split(new_x,y,train_size=0.8,random_state=15)
+mv_x=x[2:]
+mv_y=y[2:]
+new_x=pd.DataFrame({"Vix Close":mv_x, "Yesterday Close":yesterday_list,"Day Before Close":day_before_list})
+mul_x_train, mul_x_test, mul_y_train, mul_y_test = sk.train_test_split(new_x,mv_y,train_size=0.8,random_state=15)
 
 lrm = lm.LinearRegression()
 lrm.fit(mul_x_train,mul_y_train)
@@ -120,37 +119,62 @@ prediction7= lrm.predict(mul_x_test)
 
 print("Multiple Variables Linear Regression "+str(r2_score(mul_y_test,prediction7)))
 
-# Polynomial Regression 
+# Decision Tree Classifier 
+signs=list()
+for index, row in main_df.iterrows():
+    if main_df["Dollar Change"][index] >= 0:
+        signs.append(1)
+    else:
+        signs.append(0)
+dt_y=pd.DataFrame({"Dollar Sign":signs})
+print(dt_y)
+print("CNT : ",cnt)
 
-#Multiple x values 
+
+dtc_x_train, dtc_x_test, dtc_y_train, dtc_y_test = sk.train_test_split(x,dt_y,train_size=0.8,random_state=15)
+
+dtc_x_train=np.array(dtc_x_train).reshape(-1,1)
+dtc_x_test=np.array(dtc_x_test).reshape(-1,1)
+
+dtc = DecisionTreeClassifier()
+dtc.fit(dtc_x_train,dtc_y_train)
+
+dtc_y_pred=dtc.predict(dtc_x_test)
+
+print(classification_report(dtc_y_test,dtc_y_pred))
+print(confusion_matrix(dtc_y_test,dtc_y_pred))
+
+
+
 
 # Plotting Models
-plt.plot(x_test,prediction,color="red",label="Model")
-plt.scatter(x_test,y_test,label="Test Data")
-plt.show()
+if False :
+    plt.plot(x_test,prediction,color="red",label="Model")
+    plt.scatter(x_test,y_test,label="Test Data")
+    plt.show()
 
-plt.plot(x_test,prediction2,color="red")
-plt.scatter(x_test,y_test)
-plt.show()
+    plt.plot(x_test,prediction2,color="red")
+    plt.scatter(x_test,y_test)
+    plt.show()
 
-plt.plot(x_test,prediction3,color="red")
-plt.scatter(x_test,y_test)
-plt.show()
+    plt.plot(x_test,prediction3,color="red")
+    plt.scatter(x_test,y_test)
+    plt.show()
 
-plt.plot(x_test,prediction4,color="red")
-plt.scatter(x_test,y_test)
-plt.show()
+    plt.plot(x_test,prediction4,color="red")
+    plt.scatter(x_test,y_test)
+    plt.show()
 
-plt.plot(log_x_test,prediction5,color="red")
-plt.scatter(log_x_test,log_y_test)
-plt.show()
+    plt.plot(log_x_test,prediction5,color="red")
+    plt.scatter(log_x_test,log_y_test)
+    plt.show()
 
-plt.plot(x_test30,prediction6,color="red",label="Model")
-plt.scatter(x_test30,y_test30,label="Test Data")
-plt.show()
+    plt.plot(x_test30,prediction6,color="red",label="Model")
+    plt.scatter(x_test30,y_test30,label="Test Data")
+    plt.show()
 
-plt.scatter(mul_y_test,prediction7)
-plt.show()
+    plt.scatter(mul_y_test,prediction7)
+    plt.show()
 
 
 
