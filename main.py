@@ -4,8 +4,8 @@ import numpy as np
 import sklearn.model_selection as sk 
 import sklearn.linear_model as lm
 import math 
-from sklearn.metrics import r2_score, classification_report, confusion_matrix
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import r2_score, classification_report, confusion_matrix, mean_absolute_error
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 
 
 # Original Dataset : 
@@ -119,6 +119,20 @@ prediction7= lrm.predict(mul_x_test)
 
 print("Multiple Variables Linear Regression "+str(r2_score(mul_y_test,prediction7)))
 
+# Decision Tree Regressor 
+dtr = DecisionTreeRegressor()
+parameters = {'max_depth': [6, 7, 8, 9, 10, 12], 'max_leaf_nodes': [36, 40, 44, 48, 50, 52], 
+'max_features': [10, 12, 14, 16, 18]}
+dtr=sk.GridSearchCV(dtr, parameters)
+
+dtr.fit(x_train,y_train)
+prediction8=dtr.predict(x_test)
+print("Mean Absolute Error "+str(mean_absolute_error(y_test,prediction8)))
+
+# Training 
+predictiont=dtr.predict(x_train)
+print("Mean Absolute Error Training "+str(mean_absolute_error(y_train,predictiont)))
+
 # Decision Tree Classifier 
 signs=list()
 for index, row in main_df.iterrows():
@@ -127,9 +141,6 @@ for index, row in main_df.iterrows():
     else:
         signs.append(0)
 dt_y=pd.DataFrame({"Dollar Sign":signs})
-print(dt_y)
-print("CNT : ",cnt)
-
 
 dtc_x_train, dtc_x_test, dtc_y_train, dtc_y_test = sk.train_test_split(x,dt_y,train_size=0.8,random_state=15)
 
@@ -139,11 +150,10 @@ dtc_x_test=np.array(dtc_x_test).reshape(-1,1)
 dtc = DecisionTreeClassifier()
 dtc.fit(dtc_x_train,dtc_y_train)
 
-dtc_y_pred=dtc.predict(dtc_x_test)
+prediction9=dtc.predict(dtc_x_test)
 
-print(classification_report(dtc_y_test,dtc_y_pred))
-print(confusion_matrix(dtc_y_test,dtc_y_pred))
-
+print(classification_report(dtc_y_test,prediction9))
+print(confusion_matrix(dtc_y_test,prediction9))
 
 
 
