@@ -6,6 +6,9 @@ import sklearn.linear_model as lm
 import math 
 from sklearn.metrics import r2_score, classification_report, confusion_matrix, mean_absolute_error
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.neural_network import MLPRegressor
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
+
 
 
 # Original Dataset : 
@@ -17,8 +20,6 @@ main_df=pd.read_csv("combined.csv")
 
 x=main_df["Vix Close"]
 y=main_df["Dollar Close"]
-
-
 
 # Creating training and testing Data 
 x_train, x_test, y_train, y_test = sk.train_test_split(x,y,train_size=0.8,random_state=15)
@@ -32,6 +33,7 @@ lr = lm.LinearRegression()
 lr.fit(x_train,y_train)
 prediction= lr.predict(x_test)
 print("Linear Regression Score "+str(lr.score(x_test,y_test)))
+
 
 # Huber Regression 
 hr = lm.HuberRegressor(epsilon=1.0)
@@ -125,13 +127,47 @@ parameters = {'max_depth': [6, 7, 8, 9, 10, 12], 'max_leaf_nodes': [36, 40, 44, 
 'max_features': [10, 12, 14, 16, 18]}
 dtr=sk.GridSearchCV(dtr, parameters)
 
+print("Decision Tree Regressor :")
 dtr.fit(x_train,y_train)
 prediction8=dtr.predict(x_test)
-print("Mean Absolute Error "+str(mean_absolute_error(y_test,prediction8)))
+print(" Mean Absolute Error "+str(mean_absolute_error(y_test,prediction8)))
 
 # Training 
 predictiont=dtr.predict(x_train)
-print("Mean Absolute Error Training "+str(mean_absolute_error(y_train,predictiont)))
+print(" Mean Absolute Error Training "+str(mean_absolute_error(y_train,predictiont)))
+
+
+
+# Neural Network Regressor 
+nn = MLPRegressor(random_state=10)
+nn.fit(x_train,y_train)
+print("Neural Network Regressor :")
+prediction9 = nn.predict(x_test)
+print(" Mean Absolute Error "+str(mean_absolute_error(y_test,prediction9)))
+
+#Training
+prediction9t = nn.predict(x_train)
+print(" Mean Absolute Error Training "+str(mean_absolute_error(y_train,prediction9t)))
+
+# Gradient Boosting Regressor 
+egb=GradientBoostingRegressor()
+egb.fit(x_train,y_train)
+prediction12=egb.predict(x_test)
+print("Gradient Boosting Regressor")
+print(" Mean Absolute Error "+str(mean_absolute_error(y_test,prediction12)))
+prediction12t=egb.predict(x_train)
+print(" Mean Absolute Error Training " +str(mean_absolute_error(y_train,prediction12t)))
+
+# Random Forest 
+rf=RandomForestRegressor()
+rf=sk.GridSearchCV(rf, parameters)
+rf.fit(x_train,y_train)
+prediction13=rf.predict(x_test)
+print(rf.get_params())
+print("Random Forest Regressor")
+print(" Mean Absolute Error "+str(mean_absolute_error(y_test,prediction13)))
+prediction13t=rf.predict(x_train)
+print(" Mean Absolute Error Training " +str(mean_absolute_error(y_train,prediction13t)))
 
 # Decision Tree Classifier 
 signs=list()
@@ -147,13 +183,17 @@ dtc_x_train, dtc_x_test, dtc_y_train, dtc_y_test = sk.train_test_split(x,dt_y,tr
 dtc_x_train=np.array(dtc_x_train).reshape(-1,1)
 dtc_x_test=np.array(dtc_x_test).reshape(-1,1)
 
+
+
 dtc = DecisionTreeClassifier()
 dtc.fit(dtc_x_train,dtc_y_train)
 
-prediction9=dtc.predict(dtc_x_test)
+prediction10=dtc.predict(dtc_x_test)
 
-print(classification_report(dtc_y_test,prediction9))
-print(confusion_matrix(dtc_y_test,prediction9))
+print(classification_report(dtc_y_test,prediction10))
+print(confusion_matrix(dtc_y_test,prediction10))
+
+
 
 
 
