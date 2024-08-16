@@ -15,6 +15,14 @@ from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 # Dollar : 16600 rows X 7 columns 
 # VIX : 8994 rows X 7 columns 
 
+# Mean Squared Error Calculater
+def mean_sqaured_error(predicted,actual):
+    count=0
+    squared_differences=0
+    for p in predicted: 
+        squared_differences +=( (actual[count]-p) ** 2)
+    return (squared_differences/len(predicted))
+
 main_df=pd.read_csv("combined.csv")
 
 
@@ -32,27 +40,45 @@ x_test=np.array(x_test).reshape(-1,1)
 lr = lm.LinearRegression()
 lr.fit(x_train,y_train)
 prediction= lr.predict(x_test)
-print("Linear Regression Score "+str(lr.score(x_test,y_test)))
+
+print("Linear Regression :")
+print(" Mean Absolute Error "+str(mean_absolute_error(y_test,prediction)))
+print(" Mean Squared Error "+str(mean_sqaured_error(y_test,prediction)))
+predictiont = lr.predict(x_train)
+print(" Mean Absolute Error Training "+str(mean_absolute_error(y_train,predictiont)))
+print(" Mean Squared Error Training "+str(mean_sqaured_error(y_train,predictiont)))
 
 
 # Huber Regression 
 hr = lm.HuberRegressor(epsilon=1.0)
 hr.fit(x_train,y_train)
 prediction2= hr.predict(x_test)
-print(" Huber Regression Score "+str(hr.score(x_test,y_test)))
-
+print("Huber Regression :")
+print(" Mean Absolute Error "+str(mean_absolute_error(y_test,prediction2)))
+print(" Mean Squared Error "+str(mean_sqaured_error(y_test,prediction2)))
+prediction2t = hr.predict(x_train)
+print(" Mean Absolute Error Training "+str(mean_absolute_error(y_train,prediction2t)))
+print(" Mean Squared Error Training "+str(mean_sqaured_error(y_train,prediction2t)))
 # Quantile Regression 
 qr = lm.QuantileRegressor(quantile=0.5)
 qr.fit(x_train,y_train)
 prediction3= qr.predict(x_test)
-print(" Quantile Regression Score "+str(qr.score(x_test,y_test)))
-
+print("Quantile Regression :")
+print(" Mean Absolute Error "+str(mean_absolute_error(y_test,prediction3)))
+print(" Mean Squared Error "+str(mean_sqaured_error(y_test,prediction3)))
+prediction3t = qr.predict(x_train)
+print(" Mean Absolute Error Training "+str(mean_absolute_error(y_train,prediction3t)))
+print(" Mean Squared Error Training "+str(mean_sqaured_error(y_train,prediction3t)))
 # RANCAS Regression 
 rr = lm.RANSACRegressor(random_state=6)
 rr.fit(x_train,y_train)
 prediction4= rr.predict(x_test)
-print(" RANSAC Regression Score "+str(rr.score(x_test,y_test)))
-
+print("RANSAC Regression :")
+print(" Mean Aboslute Error "+str(mean_absolute_error(y_test,prediction4)))
+print(" Mean Squared Error "+str(mean_sqaured_error(y_test,prediction4)))
+prediction4t = rr.predict(x_train)
+print(" Mean Absolute Error Training "+str(mean_absolute_error(y_train,prediction4t)))
+print(" Mean Squared Error Training "+str(mean_sqaured_error(y_train,prediction4t)))
 # Logarithmic Regression 
 logs_vix=list()
 logs_dollar=list()
@@ -71,8 +97,12 @@ log_x_test=np.array(log_x_test).reshape(-1,1)
 logr = lm.LinearRegression()
 logr.fit(log_x_train,log_y_train)
 prediction5= logr.predict(log_x_test)
-print("Logarithmic Regression Score "+str(logr.score(log_x_test,log_y_test)))
-
+print("Logarithmic Regression :")
+print(" Mean Absolute Error "+str(mean_absolute_error(log_y_test,prediction5)))
+print(" Mean Squared Error "+str(mean_sqaured_error(np.array(log_y_test).reshape(-1,1),prediction5)))
+prediction5t = logr.predict(log_x_train)
+print(" Mean Absolute Error Training "+str(mean_absolute_error(log_y_train,prediction5t)))
+print(" Mean Squared Error Training "+str(mean_sqaured_error(np.array(log_y_train).reshape(-1,1),prediction5t)))
 # Linear Regression on First 30 VIX values 
 under_30_vix=list()
 under_30_dollar=list()
@@ -93,8 +123,12 @@ x_test30=np.array(x_test30).reshape(-1,1)
 lr30 = lm.LinearRegression()
 lr30.fit(x_train30,y_train30)
 prediction6= lr.predict(x_test30)
-print("First 30 Linear Regression Score "+str(lr.score(x_test30,y_test30)))
-
+print("First 30 Linear Regression :")
+print(" Mean Absolute Error "+str(mean_absolute_error(y_test30,prediction6)))
+print(" Mean Squared Error "+str(mean_sqaured_error(y_test,prediction6)))
+prediction6t = lr30.predict(x_train30)
+print(" Mean Absolute Error Training "+str(mean_absolute_error(y_train30,prediction6t)))
+print(" Mean Squared Error Training "+str(mean_sqaured_error(np.array(y_train30).reshape(-1,1),prediction6t)))
 # Multiple Variables Linear Regression 
 yesterday_list=list()
 day_before_list=list()
@@ -118,8 +152,12 @@ mul_x_train, mul_x_test, mul_y_train, mul_y_test = sk.train_test_split(new_x,mv_
 lrm = lm.LinearRegression()
 lrm.fit(mul_x_train,mul_y_train)
 prediction7= lrm.predict(mul_x_test)
-
-print("Multiple Variables Linear Regression "+str(r2_score(mul_y_test,prediction7)))
+print("Multiple Variables Linear Regression :")
+print(" Mean Absolute Error "+str(mean_absolute_error(mul_y_test,prediction7)))
+print(" Mean Squared Error "+str(mean_sqaured_error(y_test,prediction7)))
+prediction7t = lrm.predict(mul_x_train)
+print(" Mean Absolute Error Training "+str(mean_absolute_error(mul_y_train,prediction7t)))
+print(" Mean Squared Error Training "+str(mean_sqaured_error(mul_y_train,prediction7t)))
 
 # Decision Tree Regressor 
 dtr = DecisionTreeRegressor()
@@ -131,11 +169,10 @@ print("Decision Tree Regressor :")
 dtr.fit(x_train,y_train)
 prediction8=dtr.predict(x_test)
 print(" Mean Absolute Error "+str(mean_absolute_error(y_test,prediction8)))
-
-# Training 
-predictiont=dtr.predict(x_train)
-print(" Mean Absolute Error Training "+str(mean_absolute_error(y_train,predictiont)))
-
+print(" Mean Squared Error "+str(mean_sqaured_error(y_test,prediction8)))
+prediction8t=dtr.predict(x_train)
+print(" Mean Absolute Error Training "+str(mean_absolute_error(y_train,prediction8t)))
+print(" Mean Squared Error Training "+str(mean_sqaured_error(y_train,prediction8t)))
 
 
 # Neural Network Regressor 
@@ -144,21 +181,24 @@ nn.fit(x_train,y_train)
 print("Neural Network Regressor :")
 prediction9 = nn.predict(x_test)
 print(" Mean Absolute Error "+str(mean_absolute_error(y_test,prediction9)))
-
+print(" Mean Squared Error "+str(mean_sqaured_error(y_test,prediction9)))
 #Training
 prediction9t = nn.predict(x_train)
 print(" Mean Absolute Error Training "+str(mean_absolute_error(y_train,prediction9t)))
-
+print(" Mean Squared Error Training "+str(mean_sqaured_error(y_train,prediction9t)))
 # Gradient Boosting Regressor 
 egb=GradientBoostingRegressor()
 egb.fit(x_train,y_train)
 prediction12=egb.predict(x_test)
 print("Gradient Boosting Regressor")
 print(" Mean Absolute Error "+str(mean_absolute_error(y_test,prediction12)))
+print(" Mean Squared Error "+str(mean_sqaured_error(y_test,prediction12)))
 prediction12t=egb.predict(x_train)
 print(" Mean Absolute Error Training " +str(mean_absolute_error(y_train,prediction12t)))
-
+print(  "Mean Squared Error Training"+str(mean_sqaured_error(y_train,prediction12t)))
 # Random Forest 
+
+
 rf=RandomForestRegressor()
 rf=sk.GridSearchCV(rf, parameters)
 rf.fit(x_train,y_train)
@@ -166,8 +206,11 @@ prediction13=rf.predict(x_test)
 print(rf.get_params())
 print("Random Forest Regressor")
 print(" Mean Absolute Error "+str(mean_absolute_error(y_test,prediction13)))
+print(" Mean Squared Error "+str(mean_sqaured_error(y_test,prediction13)))
 prediction13t=rf.predict(x_train)
 print(" Mean Absolute Error Training " +str(mean_absolute_error(y_train,prediction13t)))
+print(" Mean Squared Error "+str(mean_sqaured_error(y_train,prediction13t)))
+
 
 # Decision Tree Classifier 
 signs=list()
@@ -183,16 +226,12 @@ dtc_x_train, dtc_x_test, dtc_y_train, dtc_y_test = sk.train_test_split(x,dt_y,tr
 dtc_x_train=np.array(dtc_x_train).reshape(-1,1)
 dtc_x_test=np.array(dtc_x_test).reshape(-1,1)
 
-
-
 dtc = DecisionTreeClassifier()
 dtc.fit(dtc_x_train,dtc_y_train)
-
 prediction10=dtc.predict(dtc_x_test)
 
-print(classification_report(dtc_y_test,prediction10))
-print(confusion_matrix(dtc_y_test,prediction10))
-
+#print(classification_report(dtc_y_test,prediction10))
+#print(confusion_matrix(dtc_y_test,prediction10))
 
 
 
