@@ -35,7 +35,7 @@ x_test=np.array(x_test).reshape(-1,1)
 lr = lm.LinearRegression()
 lr.fit(x_train,y_train)
 prediction= lr.predict(x_test)
-
+print(lr.coef_)
 print("Linear Regression :")
 print(" Mean Absolute Error "+str(mean_absolute_error(y_test,prediction)))
 print(" Mean Squared Error "+str(mean_squared_error(y_test,prediction)))
@@ -48,6 +48,7 @@ print(" Mean Squared Error Training "+str(mean_squared_error(y_train,predictiont
 hr = lm.HuberRegressor(epsilon=1.0)
 hr.fit(x_train,y_train)
 prediction2= hr.predict(x_test)
+print(hr.coef_)
 print("Huber Regression :")
 print(" Mean Absolute Error "+str(mean_absolute_error(y_test,prediction2)))
 print(" Mean Squared Error "+str(mean_squared_error(y_test,prediction2)))
@@ -92,6 +93,7 @@ log_x_test=np.array(log_x_test).reshape(-1,1)
 logr = lm.LinearRegression()
 logr.fit(log_x_train,log_y_train)
 prediction5= logr.predict(log_x_test)
+print(logr.coef_)
 print("Logarithmic Regression :")
 print(" Mean Absolute Error "+str(mean_absolute_error(log_y_test,prediction5)))
 print(" Mean Squared Error "+str(mean_squared_error(np.array(log_y_test).reshape(-1,1),prediction5)))
@@ -118,6 +120,7 @@ x_test30=np.array(x_test30).reshape(-1,1)
 lr30 = lm.LinearRegression()
 lr30.fit(x_train30,y_train30)
 prediction6= lr.predict(x_test30)
+print(lr30.coef_)
 print("First 30 Linear Regression :")
 print(" Mean Absolute Error "+str(mean_absolute_error(y_test30,prediction6)))
 print(" Mean Squared Error "+str(mean_squared_error(y_test30,prediction6)))
@@ -147,6 +150,7 @@ mul_x_train, mul_x_test, mul_y_train, mul_y_test = sk.train_test_split(new_x,mv_
 lrm = lm.LinearRegression()
 lrm.fit(mul_x_train,mul_y_train)
 prediction7= lrm.predict(mul_x_test)
+print(lrm.coef_)
 print("Multiple Variables Linear Regression :")
 print(" Mean Absolute Error "+str(mean_absolute_error(mul_y_test,prediction7)))
 print(" Mean Squared Error "+str(mean_squared_error(mul_y_test,prediction7)))
@@ -193,17 +197,18 @@ print(" Mean Absolute Error Training " +str(mean_absolute_error(y_train,predicti
 print(  "Mean Squared Error Training "+str(mean_squared_error(y_train,prediction12t)))
 
 # Random Forest Regressor
-rf=RandomForestRegressor()
-rf=sk.GridSearchCV(rf, parameters)
-rf.fit(x_train,y_train)
-prediction13=rf.predict(x_test)
-print(rf.get_params())
-print("Random Forest Regressor")
-print(" Mean Absolute Error "+str(mean_absolute_error(y_test,prediction13)))
-print(" Mean Squared Error "+str(mean_squared_error(y_test,prediction13)))
-prediction13t=rf.predict(x_train)
-print(" Mean Absolute Error Training " +str(mean_absolute_error(y_train,prediction13t)))
-print(" Mean Squared Error "+str(mean_squared_error(y_train,prediction13t)))
+if False :
+    rf=RandomForestRegressor()
+    rf=sk.GridSearchCV(rf, parameters)
+    rf.fit(x_train,y_train)
+    prediction13=rf.predict(x_test)
+    print(rf.get_params())
+    print("Random Forest Regressor")
+    print(" Mean Absolute Error "+str(mean_absolute_error(y_test,prediction13)))
+    print(" Mean Squared Error "+str(mean_squared_error(y_test,prediction13)))
+    prediction13t=rf.predict(x_train)
+    print(" Mean Absolute Error Training " +str(mean_absolute_error(y_train,prediction13t)))
+    print(" Mean Squared Error "+str(mean_squared_error(y_train,prediction13t)))
 
 
 # Decision Tree Classifier 
@@ -227,15 +232,21 @@ prediction10=dtc.predict(dtc_x_test)
 print(classification_report(dtc_y_test,prediction10))
 print(confusion_matrix(dtc_y_test,prediction10))
 
-dates=list()
-for index, row in main_df.iterrows():
-    if main_df["Dollar Close"][index] in y_test:
-        dates.append(main_df["Date"][index])
 
-print(dates)
-plt.scatter(prediction8,dates)
-plt.scatter(y_test,dates)
-plt.show()
+datesno=list()
+for index, row in pd.DataFrame(y_test).iterrows():
+    datesno.append(index)
+datesno.sort()
+dates=list()
+for d in datesno:
+    dates.append(main_df["Date"][d])
+print(len(dates))
+
+
+
+
+
+
 
 # Plotting Models
 if False :
