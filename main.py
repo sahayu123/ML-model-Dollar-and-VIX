@@ -8,7 +8,8 @@ from sklearn.metrics import r2_score, classification_report, confusion_matrix, m
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.neural_network import MLPRegressor
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
-
+import statsmodels.api as sm
+from sklearn.model_selection import cross_val_score
 
 
 # Original Dataset : 
@@ -36,12 +37,24 @@ lr = lm.LinearRegression()
 lr.fit(x_train,y_train)
 prediction= lr.predict(x_test)
 print(lr.coef_)
+
+# Linear Regression with statsmodels (p-values)
+x_train_const = sm.add_constant(x_train)  
+ols_model = sm.OLS(y_train, x_train_const).fit()
+print("Statsmodels OLS Summary (Linear Regression):")
+print(ols_model.summary())  
+
 print("Linear Regression :")
 print(" Mean Absolute Error "+str(mean_absolute_error(y_test,prediction)))
 print(" Mean Squared Error "+str(mean_squared_error(y_test,prediction)))
 predictiont = lr.predict(x_train)
 print(" Mean Absolute Error Training "+str(mean_absolute_error(y_train,predictiont)))
 print(" Mean Squared Error Training "+str(mean_squared_error(y_train,predictiont)))
+
+
+cv_scores_lr = cross_val_score(lr, x_train, y_train, scoring='neg_mean_absolute_error', cv=5)
+print("5-Fold CV MAE (Linear):", -cv_scores_lr.mean())
+print("Overfitting Ratio (Train/Test):", mean_absolute_error(y_train, predictiont) / mean_absolute_error(y_test, prediction))
 
 
 # Huber Regression 
@@ -55,6 +68,12 @@ print(" Mean Squared Error "+str(mean_squared_error(y_test,prediction2)))
 prediction2t = hr.predict(x_train)
 print(" Mean Absolute Error Training "+str(mean_absolute_error(y_train,prediction2t)))
 print(" Mean Squared Error Training "+str(mean_squared_error(y_train,prediction2t)))
+
+cv_scores_hr = cross_val_score(hr, x_train, y_train, scoring='neg_mean_absolute_error', cv=5)
+print("5-Fold CV MAE (Huber):", -cv_scores_hr.mean())
+print("Overfitting Ratio (Train/Test):", mean_absolute_error(y_train, prediction2t) / mean_absolute_error(y_test, prediction2))
+
+
 # Quantile Regression 
 qr = lm.QuantileRegressor(quantile=0.5)
 qr.fit(x_train,y_train)
@@ -65,6 +84,12 @@ print(" Mean Squared Error "+str(mean_squared_error(y_test,prediction3)))
 prediction3t = qr.predict(x_train)
 print(" Mean Absolute Error Training "+str(mean_absolute_error(y_train,prediction3t)))
 print(" Mean Squared Error Training "+str(mean_squared_error(y_train,prediction3t)))
+
+cv_scores_qr = cross_val_score(qr, x_train, y_train, scoring='neg_mean_absolute_error', cv=5)
+print("5-Fold CV MAE (Quantile):", -cv_scores_qr.mean())
+print("Overfitting Ratio (Train/Test):", mean_absolute_error(y_train, prediction3t) / mean_absolute_error(y_test, prediction3))
+
+
 # RANCAS Regression 
 rr = lm.RANSACRegressor(random_state=6)
 rr.fit(x_train,y_train)
@@ -75,6 +100,12 @@ print(" Mean Squared Error "+str(mean_squared_error(y_test,prediction4)))
 prediction4t = rr.predict(x_train)
 print(" Mean Absolute Error Training "+str(mean_absolute_error(y_train,prediction4t)))
 print(" Mean Squared Error Training "+str(mean_squared_error(y_train,prediction4t)))
+
+cv_scores_rr = cross_val_score(rr, x_train, y_train, scoring='neg_mean_absolute_error', cv=5)
+print("5-Fold CV MAE (RANSAC):", -cv_scores_rr.mean())
+print("Overfitting Ratio (Train/Test):", mean_absolute_error(y_train, prediction4t) / mean_absolute_error(y_test, prediction4))
+
+
 # Logarithmic Regression 
 logs_vix=list()
 logs_dollar=list()
@@ -100,6 +131,19 @@ print(" Mean Squared Error "+str(mean_squared_error(np.array(log_y_test).reshape
 prediction5t = logr.predict(log_x_train)
 print(" Mean Absolute Error Training "+str(mean_absolute_error(log_y_train,prediction5t)))
 print(" Mean Squared Error Training "+str(mean_squared_error(np.array(log_y_train).reshape(-1,1),prediction5t)))
+
+# Logarithmic Regression (Statsmodels for p-value)
+log_x_const = sm.add_constant(log_x_train)  
+ols_log_model = sm.OLS(log_y_train, log_x_const).fit()
+print("\nStatsmodels OLS Summary – Logarithmic Regression:")
+print(ols_log_model.summary())
+
+
+cv_scores_logr = cross_val_score(logr, log_x_train, log_y_train, scoring='neg_mean_absolute_error', cv=5)
+print("5-Fold CV MAE (Logarithmic):", -cv_scores_logr.mean())
+print("Overfitting Ratio (Train/Test):", mean_absolute_error(log_y_train, prediction5t) / mean_absolute_error(log_y_test, prediction5))
+
+
 # Linear Regression on First 30 VIX values 
 under_30_vix=list()
 under_30_dollar=list()
@@ -127,6 +171,19 @@ print(" Mean Squared Error "+str(mean_squared_error(y_test30,prediction6)))
 prediction6t = lr30.predict(x_train30)
 print(" Mean Absolute Error Training "+str(mean_absolute_error(y_train30,prediction6t)))
 print(" Mean Squared Error Training "+str(mean_squared_error(np.array(y_train30).reshape(-1,1),prediction6t)))
+
+
+# Linear Regression on First 30 VIX values (Statsmodels for p-value)
+x_train30_const = sm.add_constant(x_train30) 
+ols_30_model = sm.OLS(y_train30, x_train30_const).fit()
+print("\nStatsmodels OLS Summary – First 30 VIX Linear Regression:")
+print(ols_30_model.summary())
+
+
+cv_scores_lr30 = cross_val_score(lr30, x_train30, y_train30, scoring='neg_mean_absolute_error', cv=5)
+print("5-Fold CV MAE (First 30):", -cv_scores_lr30.mean())
+print("Overfitting Ratio (Train/Test):", mean_absolute_error(y_train30, prediction6t) / mean_absolute_error(y_test30, prediction6))
+
 # Multiple Variables Linear Regression 
 yesterday_list=list()
 day_before_list=list()
@@ -157,6 +214,17 @@ print(" Mean Squared Error "+str(mean_squared_error(mul_y_test,prediction7)))
 prediction7t = lrm.predict(mul_x_train)
 print(" Mean Absolute Error Training "+str(mean_absolute_error(mul_y_train,prediction7t)))
 print(" Mean Squared Error Training "+str(mean_squared_error(mul_y_train,prediction7t)))
+
+# Multiple Variables Linear Regression (Statsmodels for p-value)
+mv_x_const = sm.add_constant(mul_x_train)  
+ols_mv_model = sm.OLS(mul_y_train, mv_x_const).fit()
+print("\nStatsmodels OLS Summary – Multivariable Linear Regression:")
+print(ols_mv_model.summary())
+
+cv_scores_mv = cross_val_score(lrm, mul_x_train, mul_y_train, scoring='neg_mean_absolute_error', cv=5)
+print("5-Fold CV MAE (Multivariable):", -cv_scores_mv.mean())
+print("Overfitting Ratio (Train/Test):", mean_absolute_error(mul_y_train, prediction7t) / mean_absolute_error(mul_y_test, prediction7))
+
 
 # Decision Tree Regressor 
 dtr = DecisionTreeRegressor()
